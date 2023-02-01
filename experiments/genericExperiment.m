@@ -14,8 +14,17 @@ code.termination = @terminationCodeFun;
 
 % --- INITIALIZATION code: executes before the ViRMEn engine starts.
 function vr = initializationCodeFun(vr)
-    vr.rig.initializeDaq();
-    vr.fid = fopen('virmenLog.data','w');    
+    if isequal(vr.exper.movementFunction, @runFromRecording)
+        % read from file
+        vr.fid = fopen('virmenLog.data','r');
+        vr.data = fread(vr.fid,[6 inf],'double');
+        vr.recordedPositions = vr.data(3:end,:);
+        % transpose
+        vr.recordedPositions = vr.recordedPositions';
+    else
+        vr.rig.initializeDaq();
+        vr.fid = fopen('virmenLog.data','w');    
+    end
 
 
 

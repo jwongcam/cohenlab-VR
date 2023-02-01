@@ -1,6 +1,5 @@
-function [movement, movementType, encoderReading] = runFromRecording(vr)
-    %forward = vr.daq.inputSingleScan;
-    encoderReading = 0;
+function [movement, movementType] = runFromRecording(vr)
+    %forward = vr.daq.inputSingleScan;\
     if vr.iterations > size(vr.recordedPositions,1)
         movement = vr.movement;
         movementType = 'p';
