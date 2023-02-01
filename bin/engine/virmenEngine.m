@@ -46,6 +46,9 @@ vr.code = exper.experimentCode(); %#ok<*STRNU>
 [windows, transformations] = virmenLoadWindows(exper);
 vr.windows = windows(1:4,:)';
 
+% Initialize rig communication object
+vr.rig = Rig();
+
 % Load worlds
 vr.worlds = struct([]);
 for wNum = 1:length(vr.exper.worlds)
@@ -151,7 +154,7 @@ while ~vr.experimentEnded
             vr.dp = vr.movement;
             vr.velocity = vr.dp/vr.dt;
         case 'p' % position
-            vr.dp = movement-vr.position;
+            vr.dp = vr.movement-vr.position;
             vr.velocity = vr.dp/vr.dt;
     end
     
@@ -380,11 +383,12 @@ while ~vr.experimentEnded
     end
     
     % Check if experiment if over
-    if vr.keyPressed == 256 % Escape key
+    if vr.keyPressed == 256 || vr.rig.shouldTerminate % Escape key
         vr.experimentEnded = true;
     end
 end
 
+disp("VR closed, " + datestr(now,'HH:MM:SS'))
 % Display engine runtime information
 disp(['Ran ' num2str(vr.iterations-1) ' iterations in ' num2str(vr.timeElapsed,4) ...
     ' s (' num2str(vr.timeElapsed*1000/(vr.iterations-1),3) ' ms/frame refresh time).']);
@@ -400,6 +404,7 @@ catch ME
     err.stack = ME.stack(1:end-1);
     return
 end
+vr.rig.delete();
 
 % Close the window used by ViRMEn
 drawnow;
