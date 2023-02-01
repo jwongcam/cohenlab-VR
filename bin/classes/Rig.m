@@ -3,6 +3,8 @@ classdef Rig < handle
       server
       isRecording
       shouldTerminate
+      latestEncoderReading
+      shouldResetPosition
       daq
       encoderStart
    end
@@ -11,7 +13,9 @@ classdef Rig < handle
             obj.server = tcpserver(5001);
             obj.isRecording = false;
             obj.shouldTerminate = false;
+            obj.shouldResetPosition = false;
             obj.encoderStart = 0;
+            obj.latestEncoderReading = 0;
             configureCallback(obj.server, "terminator", @(src,evt)readFcn(obj, src,evt));
         end
         function readFcn(obj,src,~)
@@ -20,6 +24,7 @@ classdef Rig < handle
                 currentPosition = read(obj.daq, 1, "OutputFormat", "Matrix");
                 obj.encoderStart = currentPosition;
                 obj.isRecording = true;
+                obj.shouldResetPosition = true;
                 % resetcounters(rig.daq)
                 % clear rig.daq;
                 % rig.daq = daq("ni");

@@ -17,8 +17,8 @@ function vr = initializationCodeFun(vr)
     if isequal(vr.exper.movementFunction, @runFromRecording)
         % read from file
         vr.fid = fopen('virmenLog.data','r');
-        vr.data = fread(vr.fid,[6 inf],'double');
-        vr.recordedPositions = vr.data(3:end,:);
+        vr.data = fread(vr.fid,[7 inf],'double');
+        vr.recordedPositions = vr.data(3:6,:);
         % transpose
         vr.recordedPositions = vr.recordedPositions';
     else
@@ -31,8 +31,7 @@ function vr = initializationCodeFun(vr)
 % --- RUNTIME code: executes on every iteration of the ViRMEn engine.
 function vr = runtimeCodeFun(vr)
     if (vr.rig.shouldResetPosition)
-        vr.position(1:2) = vr.worlds{vr.currentWorld}.startLocation;
-        vr.position(4) = vr.worlds{vr.currentWorld}.startDirection;
+        vr.position(1:4) = vr.worlds{vr.currentWorld}.startLocation;
         vr.rig.shouldResetPosition = false;
     end
 
@@ -41,6 +40,9 @@ function vr = runtimeCodeFun(vr)
     if vr.position(2) > endPosition % test if the animal is at the end of the track
         vr.position(2) = 0; % set the animal’s y position to 0
         vr.dp(:) = 0; % prevent any additional movement during teleportation
+        if (vr.rig.isRecording)
+            vr.trialNumber = vr.trialNumber + 1;
+        end
     end
 
     
@@ -49,7 +51,7 @@ function vr = runtimeCodeFun(vr)
         
         % write timestamp and the x & y components of position and velocity to a file
         % using floating-point precision
-        fwrite(vr.fid, [timestamp vr.rig.latestEncoderReading vr.position],'double');
+        fwrite(vr.fid, [timestamp vr.rig.latestEncoderReading vr.position vr.trialNumber],'double');
         
     end
        

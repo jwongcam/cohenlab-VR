@@ -48,6 +48,7 @@ vr.windows = windows(1:4,:)';
 
 % Initialize rig communication object
 vr.rig = Rig();
+vr.trialNumber = 0;
 
 % Load worlds
 vr.worlds = struct([]);
