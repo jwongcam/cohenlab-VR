@@ -60,3 +60,9 @@ function vr = runtimeCodeFun(vr)
 
 % --- TERMINATION code: executes after the ViRMEn engine stops.
 function vr = terminationCodeFun(vr)
+    if (vr.rig.isRecording)
+        filepath = fileparts(which('virmenLog.data')) + "\virmenLog.data"
+        writeline(vr.rig.server, filepath)
+        fclose(vr.fid);
+
+    end
