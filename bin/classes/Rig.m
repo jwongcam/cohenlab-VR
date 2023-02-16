@@ -5,7 +5,8 @@ classdef Rig < handle
       shouldTerminate
       latestEncoderReading
       shouldResetPosition
-      daq
+      waterSession
+      moveSession
       encoderStart
    end
    methods
@@ -34,14 +35,29 @@ classdef Rig < handle
             end
             disp(vr.message);
         end
-        function initializeDaq(obj)
+        function initializeDaq(obj, deviceName)
             daqreset;
-            obj.daq = daq("ni");
-            addinput(obj.daq, 'Dev2', 'ctr0', 'EdgeCount');
+            obj.waterSession = daq("ni"); % background operations
+            obj.moveSession = daq("ni"); % on-demand operations
+
+            obj.waterSession.Rate = 100;
+            addinput(obj.moveSession, deviceName, 'ctr0', 'EdgeCount');
+            addoutput(obj.waterSession, deviceName, 'ao0', 'Voltage');
+        end
+        function reward(obj)
+            % for some reason, background signal output does not work
+            % preload(obj.waterSession, [ones(1,100)*10 0]');
+            % start(obj.waterSession);
+            write(obj.waterSession, [10]);
+            t = timer;
+            t.StartDelay = 1;
+            t.TimerFcn = @(~,~)write(obj.waterSession, [0]);
+            start(t);
         end
         function delete(obj)
             try
-                stop(obj.daq)
+                stop(obj.waterSession);
+                stop(obj.moveSession);
             catch
                 % do nothing
             end

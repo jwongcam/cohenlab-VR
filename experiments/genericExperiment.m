@@ -22,7 +22,7 @@ function vr = initializationCodeFun(vr)
         % transpose
         vr.recordedPositions = vr.recordedPositions';
     else
-        vr.rig.initializeDaq();
+        vr.rig.initializeDaq('Dev3');
         vr.fid = fopen('virmenLog.data','w');    
     end
 
@@ -38,6 +38,7 @@ function vr = runtimeCodeFun(vr)
     % trackLength = eval(vr.exper.variables.fullLength);
     endPosition = 105;
     if vr.position(2) > endPosition % test if the animal is at the end of the track
+        vr.rig.reward();
         vr.position(2) = 0; % set the animal’s y position to 0
         vr.dp(:) = 0; % prevent any additional movement during teleportation
         if (vr.rig.isRecording)
