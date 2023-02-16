@@ -1,6 +1,6 @@
 function [movement, movementType] = moveWithEncoderDisplacement(vr)
     %forward = vr.daq.inputSingleScan;
-    currentEncoderReading = read(vr.rig.daq, 1, "OutputFormat", "Matrix");
+    currentEncoderReading = read(vr.rig.moveSession, 1, "OutputFormat", "Matrix");
     encoderDisplacement = currentEncoderReading - vr.rig.latestEncoderReading;
     vr.rig.latestEncoderReading = currentEncoderReading;
 
