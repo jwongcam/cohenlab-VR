@@ -22,7 +22,7 @@ classdef Rig < handle
         function readFcn(obj,src,~)
             vr.message = readline(src);
             if (vr.message == "start")
-                currentPosition = read(obj.daq, 1, "OutputFormat", "Matrix");
+                currentPosition = read(obj.moveSession, 1, "OutputFormat", "Matrix");
                 obj.encoderStart = currentPosition;
                 obj.isRecording = true;
                 obj.shouldResetPosition = true;
