@@ -14,7 +14,7 @@ classdef Rig < handle
             obj.server = tcpserver(5001);
             obj.isRecording = false;
             obj.shouldTerminate = false;
-            obj.shouldResetPosition = false;
+            obj.shouldResetPosition = true;
             obj.encoderStart = 0;
             obj.latestEncoderReading = 0;
             configureCallback(obj.server, "terminator", @(src,evt)readFcn(obj, src,evt));
@@ -50,7 +50,7 @@ classdef Rig < handle
             % start(obj.waterSession);
             write(obj.waterSession, [10]);
             t = timer;
-            t.StartDelay = 1;
+            t.StartDelay = 0.05;
             t.TimerFcn = @(~,~)write(obj.waterSession, [0]);
             start(t);
         end
