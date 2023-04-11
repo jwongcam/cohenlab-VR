@@ -43,7 +43,7 @@ classdef Rig < handle
             obj.waterSession.Rate = 100;
             addinput(obj.moveSession, deviceName, 'ctr0', 'EdgeCount');
             addoutput(obj.moveSession, deviceName, 'port1/line0', 'Digital');
-            %addoutput(obj.waterSession, deviceName, 'ao0', 'Voltage');
+            addoutput(obj.waterSession, deviceName, 'ao0', 'Voltage');
         end
         function reward(obj)
             % for some reason, background signal output does not work
