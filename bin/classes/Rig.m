@@ -22,7 +22,7 @@ classdef Rig < handle
         function readFcn(obj,src,~)
             vr.message = readline(src);
             if (vr.message == "start")
-                currentPosition = read(obj.daq, 1, "OutputFormat", "Matrix");
+                currentPosition = read(obj.moveSession, 1, "OutputFormat", "Matrix");
                 obj.encoderStart = currentPosition;
                 obj.isRecording = true;
                 obj.shouldResetPosition = true;
@@ -42,7 +42,8 @@ classdef Rig < handle
 
             obj.waterSession.Rate = 100;
             addinput(obj.moveSession, deviceName, 'ctr0', 'EdgeCount');
-            addoutput(obj.waterSession, deviceName, 'ao0', 'Voltage');
+            addoutput(obj.moveSession, deviceName, 'port1/line0', 'Digital');
+            %addoutput(obj.waterSession, deviceName, 'ao0', 'Voltage');
         end
         function reward(obj)
             % for some reason, background signal output does not work
@@ -52,6 +53,14 @@ classdef Rig < handle
             t = timer;
             t.StartDelay = 0.05;
             t.TimerFcn = @(~,~)write(obj.waterSession, [0]);
+            start(t);
+        end
+        function zap(obj)
+            % trigger the shutter on the rig to open for 1 second
+            write(obj.moveSession, [1]);
+            t = timer;
+            t.StartDelay = 1;
+            t.TimerFcn = @(~,~)write(obj.moveSession, [0]);
             start(t);
         end
         function delete(obj)
