@@ -403,10 +403,9 @@ catch ME
     err = struct;
     err.message = ME.message;
     err.stack = ME.stack(1:end-1);
+    vr.rig.delete();
     return
 end
-vr.rig.delete();
-
 % Close the window used by ViRMEn
 drawnow;
 virmenOpenGLRoutines(2);
