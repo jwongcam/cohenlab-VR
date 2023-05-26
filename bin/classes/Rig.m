@@ -1,7 +1,7 @@
 classdef Rig < handle
     properties
         server
-        isRecording
+        isAcquiring
         shouldTerminate
         latestEncoderReading
         lastencoder_dig
@@ -12,8 +12,8 @@ classdef Rig < handle
     end
     methods
         function obj = Rig()
-            obj.server = tcpserver(5002);
-            obj.isRecording = true;
+            obj.server = tcpserver(5001);
+            obj.isAcquiring = false;
             obj.shouldTerminate = false;
             obj.shouldResetPosition = true;
             obj.encoderStart = 0;
@@ -26,14 +26,15 @@ classdef Rig < handle
             if (vr.message == "start")
                 currentPosition = read(obj.moveSession, 1, "OutputFormat", "Matrix");
                 obj.encoderStart = currentPosition;
-                obj.isRecording = true;
+                obj.isAcquiring = true;
                 obj.shouldResetPosition = true;
                 % resetcounters(rig.daq)
                 % clear rig.daq;
                 % rig.daq = daq("ni");
                 % addinput(rig.daq, "Dev2", 'ctr0', 'EdgeCount');
             else
-                obj.shouldTerminate = true;
+                %obj.shouldTerminate = true;
+                obj.isAcquiring = false;
             end
             disp(vr.message);
         end
