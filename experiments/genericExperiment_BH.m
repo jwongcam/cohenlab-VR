@@ -37,7 +37,7 @@ function vr = runtimeCodeFun(vr)
 endPosition = 110;
 reward_pos=endPosition*0.8;
 zap_pos=endPosition*0.3;
-stim_lap=[10 11];
+stim_lap=[1:1000];
 
 if (vr.rig.shouldResetPosition)
     vr.position(1:4) = vr.worlds{vr.currentWorld}.startLocation;
@@ -46,12 +46,12 @@ if (vr.rig.shouldResetPosition)
 end
 
 % trackLength = eval(vr.exper.variables.fullLength);
-
+vr.position(2)
 if vr.position(2) > endPosition % test if the animal is at the end of the track
     %vr.rig.reward();
     vr.position(2) = -15; % set the animal2s y position to 0
     vr.dp(:) = 0; % prevent any additional movement during teleportation
-    if true %(vr.rig.isRecording)
+    if vr.rig.isAcquiring
         vr.trialNumber = vr.trialNumber + 1;
         vr.r_av(vr.trialNumber)=1;
         vr.s_av(vr.trialNumber)=1;
@@ -62,7 +62,7 @@ end
 
 if vr.position(2) <-15 % test if the animal is at the end of the track
     %vr.rig.reward();
-    vr.position(2) = -15; % set the animal-s y position to 0
+    vr.position(2) = 0; % set the animal-s y position to 0
     vr.dp(:) = 0; % prevent any additional movement during teleportation
 end
 
@@ -71,12 +71,13 @@ if vr.textClicked == 1 % check if textbox #1 has been clicked
 end
 
 if vr.trialNumber>0
-if vr.position(2)>vr.reward_pos(vr.trialNumber) && vr.r_av(vr.trialNumber)==1
-    vr.rig.reward();
-    vr.r_av(vr.trialNumber)=0;
- %   vr.reward_pos(vr.trialNumber+1)=0;
-    vr.trialNumber
-end
+    if vr.position(2)>vr.reward_pos(vr.trialNumber) && vr.r_av(vr.trialNumber)==1
+        vr.rig.reward();
+        vr.r_av(vr.trialNumber)=0;
+     %   vr.reward_pos(vr.trialNumber+1)=0;
+     fprintf(repmat('\b', 1, 100)); % Erase the old message
+    message = sprintf('Current lap is %d', vr.trialNumber);
+    end
 end
 
 if ismember(vr.trialNumber,stim_lap)
@@ -87,23 +88,18 @@ if ismember(vr.trialNumber,stim_lap)
     end
 end
 
-if (vr.rig.isRecording)
     timestamp = now;
 
-    % write timestamp and the x & y components of position and velocity to a file
-    % using floating-point precision
-    fwrite(vr.fid, [timestamp vr.rig.latestEncoderReading vr.position vr.trialNumber],'double');
-
-end
-
+% write timestamp and the x & y components of position and velocity to a file
+% using floating-point precision
+fwrite(vr.fid, [timestamp vr.rig.latestEncoderReading vr.position vr.trialNumber vr.rig.isAcquiring],'double');
 
 
 
 % --- TERMINATION code: executes after the ViRMEn engine stops.
 function vr = terminationCodeFun(vr)
-if (vr.rig.isRecording)
-    filepath = fileparts(which('virmenLog.data')) + "\virmenLog.data"
-    writeline(vr.rig.server, filepath)
-    fclose(vr.fid);
-
-end
+%if (vr.rig.isRecording)
+%    filepath = fileparts(which('virmenLog.data')) + "\virmenLog.data"
+%    writeline(vr.rig.server, filepath)
+%    fclose(vr.fid);
+%end

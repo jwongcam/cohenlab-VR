@@ -18,7 +18,7 @@ function vr = initializationCodeFun(vr)
 vr.rig.isAcquiring = true;
 tt=clock; t = datetime(tt);
 t.Format='yyMMddHHmm';
-
+vr.lapmessage=sprintf('Current lap is %d',0);
 if isequal(vr.exper.movementFunction, @runFromRecording)
     % read from file
     
@@ -36,7 +36,7 @@ end
 
 % --- RUNTIME code: executes on every iteration of the ViRMEn engine.
 function vr = runtimeCodeFun(vr)
-endPosition = 110;
+endPosition = 50;
 if (vr.rig.shouldResetPosition)
     vr.position(1:4) = vr.worlds{vr.currentWorld}.startLocation;
     vr.rig.shouldResetPosition = false;
@@ -71,7 +71,9 @@ if vr.position(2)>vr.reward_pos(vr.trialNumber+1) && vr.r_av(vr.trialNumber+1)==
     vr.rig.reward();
     vr.r_av(vr.trialNumber+1)=0;
     vr.reward_pos(vr.trialNumber+1)=0;
-    disp([num2str(vr.trialNumber+1) ' laps'])
+      fprintf(repmat('\b', 1, length(vr.lapmessage))); % Erase the old message
+    vr.lapmessage = sprintf('Current lap is %d', vr.trialNumber);
+    fprintf(vr.lapmessage);
 end
 end
 
