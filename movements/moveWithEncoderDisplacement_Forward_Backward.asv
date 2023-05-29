@@ -1,18 +1,22 @@
 function [movement, movementType] = moveWithEncoderDisplacement_Forward_Backward(vr)
     %forward = vr.daq.inputSingleScan;
 
-    encoder = read(vr.rig.moveSession, 1, "OutputFormat", "Matrix");    
+    encoder = read(vr.rig.moveSession, 1, "OutputFormat", "Matrix");
+    
+    encoder=currentEncoderReading(:,2:3);
+    
+
+
+
+    encoderDisplacement=0;
     if encoder(1)~=vr.rig.lastencoder_dig(1)
-        if encoder(2)==1
-            dir=-1;
+        if encoder(1)~=encoder(2)
+            encoderDisplacement=1;
         else
-            dir=1;
+            encoderDisplacement=-1;
         end
-    else
-        dir=1;
     end
-    encoderDisplacement=dir*(encoder(1)-vr.rig.lastencoder_dig(1));
-%datetime(clock,'Format','mm:ss:sss')
+datetime(clock,'Format','mm:ss:sss')
     %currentEncoderReading2 = read(vr.rig.moveSession, 2, "OutputFormat", "Matrix")
     %encoderDisplacement = currentEncoderReading - vr.rig.latestEncoderReading;
     vr.rig.lastencoder_dig=encoder;

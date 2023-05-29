@@ -1,9 +1,18 @@
 function [movement, movementType] = moveWithEncoderDisplacement(vr)
     %forward = vr.daq.inputSingleScan;
-    currentEncoderReading = read(vr.rig.moveSession, 1, "OutputFormat", "Matrix");
-    encoderDisplacement = currentEncoderReading - vr.rig.latestEncoderReading;
-    vr.rig.latestEncoderReading = currentEncoderReading;
 
+    currentEncoderReading = read(vr.rig.moveSession, 1, "OutputFormat", "Matrix");
+    
+    encoder=currentEncoderReading(:,2:3);
+
+    if encoder(1)~=vr.rig.lastencoder()
+
+    %currentEncoderReading2 = read(vr.rig.moveSession, 2, "OutputFormat", "Matrix")
+    %encoderDisplacement = currentEncoderReading - vr.rig.latestEncoderReading;
+    vr.rig.lastencoder=encoder;
+    vr.rig.latestEncoderReading = vr.rig.latestEncoderReading + encoderDisplacement;
+    
+vr.rig.latestEncoderReading
     % convert from encoder units to VR spatial units
     function transformedDisplacement = transformDisplacement(vr, encoderDisplacement)
         encoderCPR = 5000; % clock cycles per rotation
